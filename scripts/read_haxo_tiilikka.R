@@ -17,6 +17,7 @@ old <- read_csv("data/haxo_data_corrected_2020.csv")
 
 old %>% 
   mutate(datetime = with_tz(datetime, tzone = "Etc/GMT-2")) %>% 
+  filter(!is.na(at)) %>% 
   group_by(site) %>% 
   summarise(min_time = max(datetime)) -> old_times
 
