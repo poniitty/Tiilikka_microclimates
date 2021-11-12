@@ -69,7 +69,7 @@ daycount <- data.frame(date = c(as_date(as_date("2018-01-01"):as_date("2021-12-3
 # First T1
 daily %>% 
   filter(T1_prop == 100,
-         probl %in% c(0,3),
+         probl %in% c(0,3,5),
          is.finite(T1_mean)) %>% 
   mutate(month = month(date),
                  year = year(date)) %>% 
@@ -88,7 +88,7 @@ daily %>%
 # T2
 daily %>% 
   filter(T2_prop == 100,
-         probl %in% c(0,3,4),
+         probl %in% c(0,3,4,5),
          is.finite(T2_mean)) %>% 
   mutate(month = month(date),
          year = year(date)) %>% 
@@ -126,7 +126,7 @@ daily %>%
 # moist
 daily %>% 
   filter(moist_prop == 100,
-         probl %in% c(0,3,4),
+         probl %in% c(0,3,4,5),
          is.finite(moist_mean)) %>% 
   mutate(month = month(date),
          year = year(date)) %>% 
@@ -155,7 +155,7 @@ rm(dm_T1, dm_T2, dm_T3, dm_moist)
 # First T1
 daily %>% 
   filter(T1_prop == 100,
-         probl %in% c(0,3),
+         probl %in% c(0,3,5),
          is.finite(T1_mean)) %>% 
   mutate(month = month(date),
          year = year(date)) %>% 
@@ -177,7 +177,7 @@ daily %>%
 # T2
 daily %>% 
   filter(T2_prop == 100,
-         probl %in% c(0,3,4),
+         probl %in% c(0,3,4,5),
          is.finite(T2_mean)) %>% 
   mutate(month = month(date),
          year = year(date)) %>% 
