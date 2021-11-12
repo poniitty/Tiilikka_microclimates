@@ -136,6 +136,7 @@ df %>% mutate(date = as_date(datetime)) %>%
             soil_max = max(T1),
             surf_max = max(T2),
             air_max = max(T3),
+            air_min = min(T3),
             mean_diff = mean(abs(T3-T1)),
             moist = min(moist),
             corr = cor(T1,T3, use = "pairwise.complete.obs"),
@@ -671,7 +672,9 @@ df2 %>% mutate(probl = ifelse(site == siteid &
                         1, probl)) %>% 
   mutate(probl = ifelse(site == siteid &
                           date %in% hattu,
-                        3, probl)) -> df2
+                        3, probl)) %>% 
+  mutate(probl = ifelse(site == siteid & date >= "2020-05-26" & date <= "2020-09-28" & air_min < -5,
+                        5, probl)) -> df2
 
 # SITE = 28
 siteid <- 28
@@ -1322,7 +1325,7 @@ for(i in sites){
     # T1
     
     temp %>% filter(my == ii) %>%
-      filter(probl %in% c(0,3)) %>% 
+      filter(probl %in% c(0,3,5)) %>% 
       select(datetime, T1, site) %>%
       filter(complete.cases(.)) %>%
       rename(T1f = T1,
@@ -1334,7 +1337,7 @@ for(i in sites){
       temp1 %>%
         left_join(., dfc) %>%
         filter(site != i) %>%
-        mutate(T1 = ifelse(probl %in% c(0,3), T1, NA)) %>% 
+        mutate(T1 = ifelse(probl %in% c(0,3,5), T1, NA)) %>% 
         arrange(site, datetime) %>% 
         group_by(site) %>% 
         summarise(cor = cor(T1f, T1)) %>% 
@@ -1407,7 +1410,7 @@ for(i in sites){
     # T2
     
     temp %>% filter(my == ii) %>%
-      filter(probl %in% c(0,3,4)) %>% 
+      filter(probl %in% c(0,3,4,5)) %>% 
       select(datetime, T2, site) %>%
       filter(complete.cases(.)) %>%
       rename(T2f = T2,
@@ -1419,7 +1422,7 @@ for(i in sites){
       temp2 %>%
         left_join(., dfc) %>%
         filter(site != i) %>%
-        mutate(T2 = ifelse(probl %in% c(0,3), T2, NA)) %>% 
+        mutate(T2 = ifelse(probl %in% c(0,3,4,5), T2, NA)) %>% 
         arrange(site, datetime) %>% 
         group_by(site) %>% 
         summarise(cor = cor(T2f, T2)) %>% 
@@ -1506,7 +1509,7 @@ for(i in sites){
       temp3 %>%
         left_join(., dfc) %>%
         filter(site != i) %>%
-        mutate(T3 = ifelse(probl %in% c(0,3), T3, NA)) %>% 
+        mutate(T3 = ifelse(probl %in% c(0), T3, NA)) %>% 
         arrange(site, datetime) %>% 
         group_by(site) %>% 
         summarise(cor = cor(T3f, T3)) %>% 
@@ -1600,9 +1603,9 @@ dev.off()
 ####################################################################
 # MASK IMPOSSIBLE VALUES
 
-dfall %>% mutate(T1 = ifelse(T1 < (-50) | T1 > 50, NA, T1),
-              T2 = ifelse(T2 < (-50) | T2 > 50, NA, T2),
-              T3 = ifelse(T3 < (-50) | T3 > 50, NA, T3),
+dfall %>% mutate(T1 = ifelse(T1 < (-40) | T1 > 50, NA, T1),
+              T2 = ifelse(T2 < (-40) | T2 > 50, NA, T2),
+              T3 = ifelse(T3 < (-40) | T3 > 50, NA, T3),
               moist = ifelse(moist < 200, NA, moist)) -> dfall
 
 
@@ -1620,7 +1623,7 @@ if(!"dfall" %in% ls()){
     dfall %>% filter(site == i) %>% 
       mutate(across(T1:T3, ~ifelse(probl == 1, NA, .x))) %>% 
       mutate(across(c(T1,T3), ~ifelse(probl == 4, NA, .x))) %>% 
-      mutate(T3 = ifelse(probl == 3, NA, T3)) %>% 
+      mutate(T3 = ifelse(probl > 2, NA, T3)) %>% 
       #group_by(date) %>% 
       #summarise_at(vars(i, "soil"), funs(mean, min, max), na.rm = T) %>% 
       #lapply(function(x) replace(x, is.infinite(x),NA)) %>% as_tibble() %>% 
@@ -1646,7 +1649,7 @@ if(!"dfall" %in% ls()){
     dfall %>% filter(site == i) %>% 
       mutate(across(T1:T3, ~ifelse(probl == 1, NA, .x))) %>% 
       mutate(across(c(T1,T3), ~ifelse(probl == 4, NA, .x))) %>% 
-      mutate(T3 = ifelse(probl == 3, NA, T3)) %>% 
+      mutate(T3 = ifelse(probl > 2, NA, T3)) %>% 
       #group_by(date) %>% 
       #summarise_at(vars(i, "soil"), funs(mean, min, max), na.rm = T) %>% 
       #lapply(function(x) replace(x, is.infinite(x),NA)) %>% as_tibble() %>% 
