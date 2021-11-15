@@ -410,6 +410,7 @@ d1 %>% mutate(deep_snow_days_T3 = ifelse(is.na(deep_snow_days_T3) & T2_ft > 0, 0
               n_deep_snow_period_T3 = ifelse(is.na(n_deep_snow_period_T3) & T2_ft > 0, 0, n_deep_snow_period_T3),
               last_deep_snow_doy_T3 = ifelse(is.na(last_deep_snow_doy_T3) & T2_ft > 0, 0, last_deep_snow_doy_T3)) -> d1
 
+# Filter only data with enough days within hydro year
 d1 %>% filter(days_in_hydro_year > 300) -> d1
 
 d1 %>% as.data.table() %>% sample_n(10)
